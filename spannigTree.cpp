@@ -12,9 +12,9 @@ bool checkspanning(string msg, string prevmsg){
 	else return false;
 }
 
-int find_bridge(string bridge_name, vector<bridge*> v){
+int find_bridge(string message, vector<bridge*> v){
 	for(int i = 0; i < v.size(); i++){
-		if(bridge_name == v[i]->name)return i;
+		if(message.substr(3,2) == v[i]->name)return i;
 	}
 	return -1;
 }
@@ -57,7 +57,10 @@ int main(){
 		for(int i = 0; i < bridgenumber; i++){
 			msg = msg +  bridgearray[i]->generate_msg() + "|"; 
 		}
-		msg = msg.substr(0,msg.length() - 1 );
+		cout<<msg<<endl	;
+		while(msg[msg.length() - 1] == '|')
+			msg = msg.substr(0,msg.length() - 1 );
+
 		cout <<msg<<endl;
 		simnum++;
 		
@@ -80,35 +83,41 @@ int main(){
 
 		for(int i = 0; i<v.size(); i++){
 			for(int j = i + 1; j < v.size();j++){
-				// if messages are for same host.
+
+				//if messages are for same host.
 				if(v[i].substr(6,1) == v[j].substr(6,1)){
 					if(v[j].substr(0,2) == v[i].substr(0,2) && get_dist_from_msg(v[i]) != get_dist_from_msg(v[j])){
-						if(get_dist_from_msg(v[i]) < get_dist_from_msg(v[j])){
+						if(get_dist_from_msg(v[i]) < get_dist_from_msg(v[j]) && v[i][6] != '*'){
 							int num = find_bridge(v[j], bridgearray); 
 							if(num != -1){
 								bridgearray[num]->change_port_status(v[j].substr(6,1), "NP");
-								v[j][0] = 'C';
+								v[j][6] = '*';
 							}
 						}
-						else {
+						else if(get_dist_from_msg(v[i]) > get_dist_from_msg(v[j]) && v[i][6] != '*'){
 							int num = find_bridge(v[i], bridgearray);
 							if(num != -1){
 								bridgearray[num]->change_port_status(v[i].substr(6,1), "NP");
-								v[i][0] = 'C';
+								v[i][6] = '*';
 							}
 						}
-					}
-					else if(v[j].substr(0,2) == v[i].substr(0,2) && get_dist_from_msg(v[i]) == get_dist_from_msg(v[j]) && int(v[i][4]) != int(v[j][4])){
-						if(int(v[i][4]) < int(v[j][4])){
-							int num = find_bridge(v[j], bridgearray);
-							bridgearray[num]->change_port_status(v[j].substr(6,1), "NP");
-							v[j][0] = 'C';
+					} else if(v[j].substr(0,2) == v[i].substr(0,2) && get_dist_from_msg(v[i]) == get_dist_from_msg(v[j]) && v[i].substr(3,2) != v[j].substr(3,2)){
+
+						if(int(v[i][4]) < int(v[j][4]) && v[i][6] != '*'){
+							int num = find_bridge(v[j], bridgearray); 
+							if(num != -1){
+								bridgearray[num]->change_port_status(v[j].substr(6,1), "NP");
+								v[j][6] = '*';
+							}
 						}
-						else {
+						else if(int(v[i][4]) > int(v[j][4]) && v[i][6] != '*'){
 							int num = find_bridge(v[i], bridgearray);
-							bridgearray[num]->change_port_status(v[i].substr(6,1), "NP");
-							v[i][0] = 'C';
+							if(num != -1){
+								bridgearray[num]->change_port_status(v[i].substr(6,1), "NP");
+								v[i][6] = '*';
+							}
 						}
+
 					}
 				}
 			}
@@ -119,13 +128,9 @@ int main(){
 			bridgearray[i]->process_message(msg);
 		}
 		// break;
-
+		cout<<endl;
 		for (int i = 0 ; i < bridgearray.size() ;i++){
 			bridgearray[i]->printbridge();
 		}
-	}
-
-	for (int i = 0 ; i < bridgearray.size() ;i++){
-		bridgearray[i]->printbridge();
 	}
 }
