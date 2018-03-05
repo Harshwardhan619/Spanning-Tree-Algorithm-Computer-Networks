@@ -45,33 +45,47 @@ public:
 		return token.substr(6,1);
 	}
 
+	int find_LAN(string LAN_name){
+		for(int i = 0; i < LAN_connected.size(); i++){
+			if(LAN_name == LAN_connected[i][0]) return i;
+		}
+		return -1;
+	}
+
+	// for generating and forwarding msg
 	string generate_msg(){
-		int RP = 0;
+
 		std::stringstream ss;
 		// convert to string
 		ss << distance;
 		string dist;
 		ss >> dist;
 		string message = "";
-		for(int i = 0 ; i < LAN_connected.size() ;i++){
-			if(LAN_connected[i][1] == "DP"){
 
-				message = message + root + "," + name + "," + LAN_connected[i][0] + "," + dist + "|";
+		if (root == name){
+			for(int i = 0 ; i < LAN_connected.size() ;i++){
+				if(LAN_connected[i][1] == "DP"){
+
+					message = message + root + "," + name + "," + LAN_connected[i][0] + "," + dist + "|";
+				}
+				else if(LAN_connected[i][1] == "RP"){
+					message = "";
+					break;
+				}
 			}
-			else if(LAN_connected[i][1] == "RP"){
-				RP = 1;
-				message = "";
-				break;
-			}
+			message = message.substr(0,message.length() - 1 );
+		} else {
+			message = bridge_msg;
 		}
-		message = message.substr(0,message.length() - 1 );
 		return message;
 	}
 
 	// check if msg is for given bridge 
 	bool msgfor(string str){	
-		for(int i = 0 ; i < LAN_connected.size() ;i++){
-			if(LAN_connected[i][0] == get_msg_host_from_msg(str) && name != str.substr(0,2)) return true;
+		if(str != ""){
+			for(int i = 0 ; i < LAN_connected.size() ;i++){
+				if(LAN_connected[i][0] == get_msg_host_from_msg(str) && name != str.substr(0,2) && name != str.substr(3,2) && LAN_connected[i][1] != "NP") return true;
+			}
 		}
 		return false;
 	}
@@ -96,13 +110,13 @@ public:
 				change_port_status(get_msg_host_from_msg(v[i]), "RP");
 				from_bridge = v[i].substr(3,2);
 			}
-			// rule 2: 
+			// rule 2: same root -> smaller distance
 			else if(root == v[i].substr(0,2) && get_dist_from_msg(v[i]) < distance){
 				distance = get_dist_from_msg(v[i]) + 1;
 				change_port_status(get_msg_host_from_msg(v[i]), "RP");
 				from_bridge = v[i].substr(3,2);
 			} 
-			// rule 3: 
+			// rule 3: same root | same distance -> smaller sender
 			else if(root == v[i].substr(0,2) && get_dist_from_msg(v[i]) == distance && int(v[i][4]) < int(from_bridge[1])) {
 				distance = get_dist_from_msg(v[i]) + 1;
 				change_port_status(get_msg_host_from_msg(v[i]), "RP");
@@ -116,10 +130,10 @@ public:
 		size_t p = 0;
 		string token;
 		vector<string> v;
+
 		while ((p = message.find("|")) != string::npos) {
 		    token = message.substr(0, p);
 		    if(msgfor(token)){
-		    	cout << token << endl;
 		    	v.push_back(token);
 		    }
 		    message = message.substr(p + 1);
@@ -129,13 +143,42 @@ public:
 		   	v.push_back(message);
 		}
 
+		for(int i =0 ;i<v.size();i++){
+			cout<<v[i]<<"  --  ";
+		}
+		cout << root<<endl;
 		do_operations(v);
-		printbridge();
-		// cout << message << endl;
-	}
 
-	string transfer_message(){
-		return "";
+		// process and store next message.
+		bridge_msg = "";
+
+		for(int i = 0 ; i < v.size() ;i++){
+			v[i][4] = name[1];
+
+			std::stringstream ss;
+			// convert to string
+			ss << distance;
+			string dist;
+			ss >> dist;
+
+			v[i] = v[i].substr(0,8) + dist;
+			int num = find_LAN(get_msg_host_from_msg(v[i]));
+
+			if(LAN_connected[num][1] == "RP"){
+				// Logic for forwarding
+				for(int i = 0 ;i < LAN_connected.size();i++){
+					if(LAN_connected[i][1] == "DP"){
+						string temp = v[i];
+						temp[6] = LAN_connected[i][0][0];
+						bridge_msg = bridge_msg + temp + "|";
+					}
+				}
+			}
+		}
+		bridge_msg = bridge_msg.substr(0,bridge_msg.length() - 1 );
+		printbridge();
+		cout<<bridge_msg<<endl;
+		// cout << message << endl;
 	}
 
 	string name;
