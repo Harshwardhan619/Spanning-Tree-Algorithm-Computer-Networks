@@ -102,6 +102,8 @@ public:
 	}
 
 	void do_operations(vector<string> v){
+		int temp = distance;
+
 		for(int i = 0; i < v.size(); i++){
 			// rule 1: if msg root smaller then assign than to root;
 			if(int(v[i][1]) < int(root[1])){
@@ -111,17 +113,18 @@ public:
 				from_bridge = v[i].substr(3,2);
 			}
 			// rule 2: same root -> smaller distance
-			else if(root == v[i].substr(0,2) && get_dist_from_msg(v[i]) < distance){
+			else if(root == v[i].substr(0,2) && get_dist_from_msg(v[i]) < temp){
 				distance = get_dist_from_msg(v[i]) + 1;
 				change_port_status(get_msg_host_from_msg(v[i]), "RP");
 				from_bridge = v[i].substr(3,2);
 			} 
 			// rule 3: same root | same distance -> smaller sender
-			else if(root == v[i].substr(0,2) && get_dist_from_msg(v[i]) == distance && int(v[i][4]) < int(from_bridge[1])) {
+			else if(root == v[i].substr(0,2) && get_dist_from_msg(v[i]) == temp && int(v[i][4]) < int(from_bridge[1])) {
 				distance = get_dist_from_msg(v[i]) + 1;
 				change_port_status(get_msg_host_from_msg(v[i]), "RP");
 				from_bridge = v[i].substr(3,2);
 			}
+			
 		}
 	}
 
@@ -166,10 +169,11 @@ public:
 
 			if(LAN_connected[num][1] == "RP"){
 				// Logic for forwarding
-				for(int i = 0 ;i < LAN_connected.size();i++){
-					if(LAN_connected[i][1] == "DP"){
+
+				for(int j = 0 ;j < LAN_connected.size();j++){
+					if(LAN_connected[j][1] == "DP"){
 						string temp = v[i];
-						temp[6] = LAN_connected[i][0][0];
+						temp[6] = LAN_connected[j][0][0];
 						bridge_msg = bridge_msg + temp + "|";
 					}
 				}
