@@ -2,6 +2,7 @@
 #include  <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>
 using namespace std;
 
 class bridge
@@ -25,6 +26,7 @@ public:
 
 	void printbridge (){
 		cout<<name<<": ";
+		std::sort(LAN_connected.begin(), LAN_connected.end());
 		for(int i = 0 ; i < LAN_connected.size() ;i++){
 			cout<<LAN_connected[i][0]<<"-"<<LAN_connected[i][1]<<" ";
 		}
@@ -124,7 +126,7 @@ public:
 				change_port_status(get_msg_host_from_msg(v[i]), "RP");
 				from_bridge = v[i].substr(3,2);
 			}
-			
+
 		}
 	}
 

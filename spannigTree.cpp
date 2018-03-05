@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "bridge.h"
+#include <algorithm>
 using namespace  std;
 
 
@@ -46,6 +47,10 @@ int main(){
 		bridgearray.push_back(tempbridge);
 	}
 
+	std::sort(bridgestrings.begin(), bridgestrings.end());
+
+	string root_port = bridgestrings[0].substr(0,2);
+
 	// count for simulation number
 	int simnum = 0;
  	string msg = "", prevmsg = "";
@@ -57,7 +62,7 @@ int main(){
 		for(int i = 0; i < bridgenumber; i++){
 			msg = msg +  bridgearray[i]->generate_msg() + "|"; 
 		}
-		cout<<msg<<endl	;
+
 		while(msg[msg.length() - 1] == '|')
 			msg = msg.substr(0,msg.length() - 1 );
 
@@ -86,7 +91,7 @@ int main(){
 
 				//if messages are for same host.
 				if(v[i].substr(6,1) == v[j].substr(6,1)){
-					if(v[j].substr(0,2) == v[i].substr(0,2) && get_dist_from_msg(v[i]) != get_dist_from_msg(v[j])){
+					if(v[j].substr(0,2) == root_port && v[j].substr(0,2) == v[i].substr(0,2) && get_dist_from_msg(v[i]) != get_dist_from_msg(v[j])){
 						if(get_dist_from_msg(v[i]) < get_dist_from_msg(v[j]) && v[i][6] != '*'){
 							int num = find_bridge(v[j], bridgearray); 
 							if(num != -1){
@@ -101,7 +106,7 @@ int main(){
 								v[i][6] = '*';
 							}
 						}
-					} else if(v[j].substr(0,2) == v[i].substr(0,2) && get_dist_from_msg(v[i]) == get_dist_from_msg(v[j]) && v[i].substr(3,2) != v[j].substr(3,2)){
+					} else if(v[j].substr(0,2) == root_port && v[j].substr(0,2) == v[i].substr(0,2) && get_dist_from_msg(v[i]) == get_dist_from_msg(v[j]) && v[i].substr(3,2) != v[j].substr(3,2)){
 
 						if(int(v[i][4]) < int(v[j][4]) && v[i][6] != '*'){
 							int num = find_bridge(v[j], bridgearray); 
