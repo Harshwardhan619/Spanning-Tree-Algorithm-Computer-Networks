@@ -21,4 +21,4 @@ Roll nunmber: 160050048
 			c. if root same and distances are same then compare the next hop bridge with lower value.
 
 	
-	I have done some part of forwarding table making bi=ut its not giving any output as its not complete.
+	I have done some part of forwarding table making but its not giving any output as its not complete.
