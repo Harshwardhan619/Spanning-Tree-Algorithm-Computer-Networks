@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <map>
 using namespace std;
 
 class bridge
@@ -131,7 +132,6 @@ public:
 	}
 
 	void process_message(string message){ 
-		cout<<name<<endl;
 		size_t p = 0;
 		string token;
 		vector<string> v;
@@ -144,14 +144,11 @@ public:
 		    message = message.substr(p + 1);
 		}
 		if(msgfor(message)){
-		    cout << message << endl;
 		   	v.push_back(message);
 		}
 
 		for(int i =0 ;i<v.size();i++){
-			cout<<v[i]<<"  --  ";
 		}
-		cout << root<<endl;
 		do_operations(v);
 
 		// process and store next message.
@@ -182,10 +179,10 @@ public:
 			}
 		}
 		bridge_msg = bridge_msg.substr(0,bridge_msg.length() - 1 );
-		printbridge();
-		cout<<bridge_msg<<endl;
+		// printbridge();
 		// cout << message << endl;
 	}
+
 
 	string name;
 	string bridge_msg;
@@ -193,4 +190,5 @@ public:
 	string root;
 	string from_bridge;
 	vector< vector<string> > LAN_connected;
+	map <string, string> forwarding_table;
 };

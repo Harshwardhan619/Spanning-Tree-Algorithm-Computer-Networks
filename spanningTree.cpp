@@ -30,6 +30,37 @@ int get_dist_from_msg(string token){
 	return num;
 }
 
+bool if_present(vector< vector<string> >host, string temp){
+	for(int i = 0;i<host.size();i++){
+		if(host[i][0] == temp) return true;
+	}
+	return false;
+}
+
+// string LAN(vector< vector<string> >host, string s){
+// 	for(int i = ; i < host.size();i++){
+// 		for(int j = 1; j < host[i].size; j++){
+// 			if(host[i][j] == s) return host[i][0];
+// 		}
+// 	}
+// }
+
+
+// // SOME functions I was doing for part 2 of the assignment.
+
+// void transfers_message(vector< vector<string> > host, vector<bridge*> bridgearray, string sender, string reciever, string from, string host_send, string host_recieve){
+// 	for(int i = 0; i < bridgearray; i++){
+// 		bool x = false;
+// 		for(int i = 0; i < bridgearray->LAN_connected.size();i++){
+// 			if(sender == bridgearray->LAN_connected[0]) x = true;
+// 		}
+
+// 		if(x){
+// 			// bridgearray[i]->make_entry(sender, host_send);
+// 		}
+// 	}
+// }
+
 int main(){
 	int trace,bridgenumber;
 	string temp;
@@ -66,7 +97,7 @@ int main(){
 		while(msg[msg.length() - 1] == '|')
 			msg = msg.substr(0,msg.length() - 1 );
 
-		cout <<msg<<endl;
+		// cout <<msg<<endl;
 		simnum++;
 		
 		// For processing message at some host.
@@ -84,7 +115,7 @@ int main(){
 		message = message.substr(p + 1);
 		v.push_back(message);
 
-		// now v is a vector of all messages. Doing processing at all HOSTS.
+		// now v is a vector of all messages. Doing processing at all LANs.
 
 		for(int i = 0; i<v.size(); i++){
 			for(int j = i + 1; j < v.size();j++){
@@ -133,9 +164,57 @@ int main(){
 			bridgearray[i]->process_message(msg);
 		}
 		// break;
-		cout<<endl;
-		for (int i = 0 ; i < bridgearray.size() ;i++){
-			bridgearray[i]->printbridge();
-		}
+		// cout<<endl;
 	}
+
+	vector< vector<string> > host;
+	for (int i = 0 ; i < bridgearray.size() ;i++){
+
+		bridgearray[i]->printbridge();
+
+		// ========================================================================
+		// Part 1 of the assignment ends here
+		// ========================================================================
+
+		// vector< vector<string> > temp = bridgearray[i]->LAN_connected;
+		// for(int j = 0; j < temp.size(); j++){
+		// 	if(!if_present(host, temp[j][0])){
+		// 		vector<string> temp2 (1,temp[j][0]);
+		// 		host.push_back(temp2);
+		// 	}
+		// }
+	}
+	// std::sort(host.begin(), host.end());
+
+	// std::vector<string> hoststrings (host.size());
+	// for(int i = 0; i < host.size(); i++){
+	// 	//input line of bridge
+	// 	std::getline(cin, hoststrings[i]);
+	// 	// cout<<hoststrings[i]<<" ";
+	// }
+
+	// for(int i = 0; i< hoststrings.size();i++){
+	// 	 for (int i = 4; i < hoststrings[i].length();i = i+2){ 
+	// 		host[i].push_back(hoststrings[i].substr(i,1));
+	// 	}
+	// }
+
+	// int no_of_transfers;
+	// cin >> no_of_transfers;
+	
+	// string transfers[no_of_transfers][2];
+
+	// for(int i = 0; i< no_of_transfers; i++){
+	// 	string temp1, temp2;
+	// 	cin >> temp1 >> temp2;
+	// 	transfers[i][0] = temp1;
+	// 	transfers[i][1] = temp2;
+	// }
+
+
+	// for(int i = 0; i < no_of_transfers;i++){
+	// 	for (int i = 0 ; i < bridgearray.size() ;i++){
+	// 		transfers_message(host, bridgearray, LAN(host, transfers[i][0]), LAN(host, transfers[i][1]), "ALL", transfers[i][0], transfers[i][1]);
+	// 	}
+	// }
 }
